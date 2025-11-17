@@ -52,10 +52,10 @@
       ]
     },
     {
-      "title": "Tiểu học",
+      "title": "Các Môn học",
       "submenu": [
         {
-          "title": "Toán",
+          "title": "Toán học",
           "submenu": [
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
@@ -85,7 +85,7 @@
         {
           "title": "Tự nhiên và Xã hội",
           "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
+            { "title": "Bé Thỏ Tìm Kho Báu", "url": "games/tho_tim_kho_bau/index.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]
         },
@@ -104,7 +104,7 @@
           ]
         },
         {
-          "title": "Giáo dục thể chất",
+          "title": "Giáo dục Thể chất",
           "submenu": [
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
@@ -123,86 +123,38 @@
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]
-        }
-      ]
-    },
-    {
-      "title": "THCS & THPT",
-      "submenu": [
+        },
         {
-          "title": "Toán học", "submenu": [
+          "title": "Ngữ văn",
+          "submenu": [
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]
         },
         {
-          "title": "Ngữ văn", "submenu": [
+          "title": "Khoa học Tự nhiên",
+          "submenu": [
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]
         },
         {
-          "title": "Ngoại ngữ", "submenu": [
+          "title": "Giáo dục Công dân",
+          "submenu": [
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]
         },
         {
-          "title": "Lịch sử và Địa lí", "submenu": [
+          "title": "Công nghệ",
+          "submenu": [
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]
         },
         {
-          "title": "Khoa học Tự nhiên", "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
-          ]
-        },
-        {
-          "title": "Vật lí", "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
-          ]
-        },
-        {
-          "title": "Hóa học", "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
-          ]
-        },
-        {
-          "title": "Sinh học", "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
-          ]
-        },
-        {
-          "title": "Tin học", "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
-          ]
-        },
-        {
-          "title": "Công nghệ", "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
-          ]
-        },
-        {
-          "title": "Giáo dục Công dân", "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
-          ]
-        },
-        {
-          "title": "Âm nhạc & Mĩ thuật", "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
-          ]
-        },
-        {
-          "title": "Giáo dục Thể chất", "submenu": [
+          "title": "Tin học",
+          "submenu": [
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]

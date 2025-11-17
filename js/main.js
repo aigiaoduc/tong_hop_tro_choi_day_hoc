@@ -99,6 +99,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
+
+        // --- Fullscreen Toggle Logic ---
+        const fullscreenBtn = document.getElementById('fullscreen-toggle');
+        const contentContainer = document.getElementById('content-container');
+        const body = document.body;
+
+        const enterFullscreenIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>`;
+        const exitFullscreenIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            body.classList.toggle('fullscreen-active');
+            contentContainer.classList.toggle('fullscreen-mode');
+
+            // Update icon and title
+            if (contentContainer.classList.contains('fullscreen-mode')) {
+                fullscreenBtn.innerHTML = exitFullscreenIcon;
+                fullscreenBtn.title = 'Thoát toàn màn hình';
+            } else {
+                fullscreenBtn.innerHTML = enterFullscreenIcon;
+                fullscreenBtn.title = 'Toàn màn hình';
+            }
+        });
     }
 
     // Bắt đầu quá trình
