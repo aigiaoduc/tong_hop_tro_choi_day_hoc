@@ -78,7 +78,7 @@
         {
           "title": "Đạo đức",
           "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
+            { "title": "Trò Chơi Cảm Xúc Nhân Vật", "url": "games/cam_xuc_nhan_vat_TH/index.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]
         },
@@ -127,7 +127,7 @@
         {
           "title": "Ngữ văn",
           "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
+            { "title": "Trò Chơi Cảm Xúc Nhân Vật", "url": "games/cam_xuc_nhan_vat/index.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]
         },
