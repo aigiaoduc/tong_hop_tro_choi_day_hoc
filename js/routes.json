@@ -134,7 +134,7 @@
         {
           "title": "Khoa học Tự nhiên",
           "submenu": [
-            { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" },
+            { "title": "Trò Chơi Thay Đổi Vận Tốc", "url": "games/tro_choi_thay_doi_van_toc/index.html" },
             { "title": "Công cụ đang phát triển", "url": "games/placeholder.html" }
           ]
         },

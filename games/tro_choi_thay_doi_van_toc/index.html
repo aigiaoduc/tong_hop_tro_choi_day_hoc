@@ -1,0 +1,876 @@
+<!doctype html>
+<html lang="vi">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trò Chơi Thay Đổi Vận Tốc</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+        body {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            overflow: hidden;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        .container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 15px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            letter-spacing: 1px;
+            color: #FFD700;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1.8fr 1.2fr;
+            gap: 15px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .simulation-area {
+            background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 60%, #90EE90 60%, #90EE90 100%);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .road {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            right: 0;
+            height: 100px;
+            background: #555;
+            border-top: 4px solid white;
+            border-bottom: 4px solid white;
+        }
+
+        .road-lines {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: repeating-linear-gradient(
+                to right,
+                white 0px,
+                white 40px,
+                transparent 40px,
+                transparent 80px
+            );
+            transform: translateY(-50%);
+            animation: moveLines 2s linear infinite;
+        }
+
+        @keyframes moveLines {
+            0% { background-position: 0 0; }
+            100% { background-position: 80px 0; }
+        }
+
+        .car {
+            position: absolute;
+            bottom: 90px;
+            left: 50px;
+            width: 80px;
+            height: 40px;
+            transition: left 0.1s linear;
+        }
+
+        .car-body {
+            width: 100%;
+            height: 100%;
+            background: #FF4444;
+            border-radius: 10px 10px 5px 5px;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .car-window {
+            position: absolute;
+            top: 5px;
+            left: 15px;
+            width: 50px;
+            height: 15px;
+            background: #87CEEB;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .car-wheel {
+            position: absolute;
+            bottom: -8px;
+            width: 16px;
+            height: 16px;
+            background: #333;
+            border-radius: 50%;
+            border: 2px solid #666;
+        }
+
+        .car-wheel.front {
+            right: 10px;
+        }
+
+        .car-wheel.back {
+            left: 10px;
+        }
+
+        .car-wheel.spinning {
+            animation: spin 0.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .smoke {
+            position: absolute;
+            bottom: 0;
+            left: -10px;
+            width: 20px;
+            height: 20px;
+            background: rgba(200, 200, 200, 0.5);
+            border-radius: 50%;
+            animation: smokeMove 1s ease-out infinite;
+        }
+
+        @keyframes smokeMove {
+            0% {
+                transform: translate(0, 0) scale(0.5);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translate(-30px, -20px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .finish-line {
+            position: absolute;
+            bottom: 80px;
+            right: 50px;
+            width: 8px;
+            height: 100px;
+            background: repeating-linear-gradient(
+                to bottom,
+                black 0px,
+                black 10px,
+                white 10px,
+                white 20px
+            );
+            display: none;
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .stats {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 12px 0;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateX(5px);
+        }
+
+        .stat-label {
+            font-weight: 700;
+            color: white;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        button {
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: 700;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+        }
+
+        button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-increase {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-decrease {
+            background: linear-gradient(135deg, #FF9800 0%, #f57c00 100%);
+            color: white;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            grid-column: span 2;
+            font-size: 18px;
+            padding: 16px 24px;
+        }
+
+        .btn-stop {
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #9E9E9E 0%, #757575 100%);
+            color: white;
+        }
+
+        .formula-box {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            padding: 18px;
+            border-radius: 12px;
+            border: 2px solid #2196F3;
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .formula-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(33, 150, 243, 0.3);
+        }
+
+        .formula-box h3 {
+            margin: 0 0 12px 0;
+            color: #1976D2;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .formula-box p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .calculation-box {
+            background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+            padding: 18px;
+            border-radius: 12px;
+            border: 2px solid #9C27B0;
+            box-shadow: 0 4px 12px rgba(156, 39, 176, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .calculation-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(156, 39, 176, 0.3);
+        }
+
+        .calculation-box h3 {
+            margin: 0 0 12px 0;
+            color: #7B1FA2;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .calculation-box p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+            font-weight: 500;
+        }
+
+        .mission-box {
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+            padding: 18px;
+            border-radius: 12px;
+            border: 2px solid #FF9800;
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .mission-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 152, 0, 0.3);
+        }
+
+        .mission-box.active {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mission-box h3 {
+            margin: 0 0 12px 0;
+            color: #F57C00;
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        .mission-box p {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .mission-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .mission-btn {
+            padding: 12px;
+            font-size: 14px;
+            background: linear-gradient(135deg, #E0E0E0 0%, #BDBDBD 100%);
+            color: #555;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .mission-btn:hover {
+            background: linear-gradient(135deg, #BDBDBD 0%, #9E9E9E 100%);
+            border-color: #FF9800;
+        }
+
+        .mission-btn.active {
+            background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+            color: white;
+            border-color: #FFB74D;
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.4);
+            transform: scale(1.05);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            text-align: center;
+            display: none;
+            z-index: 1000;
+            border: 3px solid #4CAF50;
+        }
+
+        .celebration.show {
+            display: block;
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        .celebration h2 {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 15px 0;
+            font-size: 36px;
+            font-weight: 800;
+            text-shadow: 2px 2px 4px rgba(76, 175, 80, 0.2);
+        }
+
+        .celebration p {
+            color: #333;
+            margin: 10px 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .warning {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+            color: white;
+            padding: 18px 35px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 18px;
+            display: none;
+            animation: shake 0.5s ease-in-out;
+            box-shadow: 0 8px 25px rgba(244, 67, 54, 0.5);
+            border: 3px solid #ffeb3b;
+            letter-spacing: 1px;
+        }
+
+        .warning.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { 
+                transform: translateX(-50%) translateY(0) rotate(0deg); 
+            }
+            25% { 
+                transform: translateX(-50%) translateY(-10px) rotate(-5deg); 
+            }
+            75% { 
+                transform: translateX(-50%) translateY(10px) rotate(5deg); 
+            }
+        }
+
+        .car-body.speeding {
+            animation: flash 0.5s ease-in-out infinite;
+        }
+
+        @keyframes flash {
+            0%, 100% { background: #FF4444; }
+            50% { background: #FF0000; }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container">
+   <div class="header">
+    <h1 id="game-title">🚗 Trò Chơi Thay Đổi Vận Tốc</h1>
+   </div>
+   <div class="main-content">
+    <div class="simulation-area">
+     <div class="warning" id="warning">
+      ⚠ QUÁ TỐC ĐỘ!
+     </div>
+     <div class="road">
+      <div class="road-lines" id="roadLines"></div>
+     </div>
+     <div class="car" id="car">
+      <div class="car-body" id="carBody">
+       <div class="car-window"></div>
+       <div class="car-wheel front" id="wheelFront"></div>
+       <div class="car-wheel back" id="wheelBack"></div>
+       <div class="smoke" id="smoke" style="display: none;"></div>
+      </div>
+     </div>
+     <div class="finish-line" id="finishLine"></div>
+    </div>
+    <div class="control-panel">
+     <div class="stats">
+      <div class="stat-item"><span class="stat-label">⚡ Vận tốc:</span> <span class="stat-value" id="velocityDisplay">0 m/s</span>
+      </div>
+      <div class="stat-item"><span class="stat-label">⏱ Thời gian:</span> <span class="stat-value" id="timeDisplay">0 s</span>
+      </div>
+      <div class="stat-item"><span class="stat-label">📏 Quãng đường:</span> <span class="stat-value" id="distanceDisplay">0 m</span>
+      </div>
+     </div>
+     <div class="controls">
+      <div class="button-group"><button class="btn-increase" onclick="increaseVelocity()">+ Tăng tốc</button> <button class="btn-decrease" onclick="decreaseVelocity()">- Giảm tốc</button>
+      </div><button class="btn-start" id="startBtn" onclick="startSimulation()">▶ Chạy</button>
+      <div class="button-group"><button class="btn-stop" onclick="stopSimulation()">⏸ Dừng</button> <button class="btn-reset" onclick="resetSimulation()">↻ Làm lại</button>
+      </div>
+     </div>
+     <div class="mission-selector"><button class="mission-btn active" onclick="selectMission(1)">Nhiệm vụ 1</button> <button class="mission-btn" onclick="selectMission(2)">Nhiệm vụ 2</button> <button class="mission-btn" onclick="selectMission(3)">Nhiệm vụ 3</button>
+     </div>
+     <div class="mission-box active" id="mission1">
+      <h3 id="mission-1-title">🎯 Nhiệm vụ 1: Đi đúng quãng đường</h3>
+      <p>Điều chỉnh vận tốc sao cho xe đi được <strong>20 mét trong 5 giây</strong>.</p>
+      <p>💡 Gợi ý: V = S / T = 20 / 5 = ?</p>
+     </div>
+     <div class="mission-box" id="mission2">
+      <h3 id="mission-2-title">🚦 Nhiệm vụ 2: Không vượt tốc độ</h3>
+      <p>Giới hạn tốc độ: <strong>10 m/s</strong></p>
+      <p>Hãy chạy xe mà không vượt quá tốc độ cho phép!</p>
+     </div>
+     <div class="mission-box" id="mission3">
+      <h3 id="mission-3-title">🏁 Nhiệm vụ 3: Về đích nhanh nhất</h3>
+      <p>Đến v��ch đích nhanh nhất có thể!</p>
+      <p>Tốc độ tối đa: <strong>12 m/s</strong></p>
+     </div>
+     <div class="formula-box">
+      <h3>📚 Công thức cần nhớ</h3>
+      <p><strong>S = V × T</strong></p>
+      <p style="font-size: 13px; margin-left: 10px;">Quãng đường = Vận tốc × Thời gian</p>
+      <p><strong>V = S / T</strong></p>
+      <p style="font-size: 13px; margin-left: 10px;">Vận tốc = Quãng đường / Thời gian</p>
+      <p><strong>T = S / V</strong></p>
+      <p style="font-size: 13px; margin-left: 10px;">Thời gian = Quãng đường / Vận tốc</p>
+     </div>
+     <div class="calculation-box" id="calculationBox">
+      <h3>🧮 Tính toán hiện tại</h3>
+      <p id="currentCalculation">Chưa bắt đầu</p>
+     </div>
+    </div>
+   </div>
+  </div>
+  <div class="celebration" id="celebration">
+   <h2>🎉 Chúc mừng!</h2>
+   <p id="celebrationMessage"></p>
+  </div>
+  <script>
+        const defaultConfig = {
+            game_title: "🚗 Trò Chơi Thay Đổi Vận Tốc",
+            mission_1_title: "🎯 Nhiệm vụ 1: Đi đúng quãng đường",
+            mission_2_title: "🚦 Nhiệm vụ 2: Không vượt tốc độ",
+            mission_3_title: "🏁 Nhiệm vụ 3: Về đích nhanh nhất"
+        };
+
+        let velocity = 0;
+        let time = 0;
+        let distance = 0;
+        let isRunning = false;
+        let intervalId = null;
+        let currentMission = 1;
+        let startTime = 0;
+
+        function updateDisplay() {
+            document.getElementById('velocityDisplay').textContent = velocity + ' m/s';
+            document.getElementById('timeDisplay').textContent = time.toFixed(1) + ' s';
+            document.getElementById('distanceDisplay').textContent = distance.toFixed(1) + ' m';
+
+            const carElement = document.getElementById('car');
+            const maxDistance = 600;
+            const carPosition = Math.min((distance / maxDistance) * 80, 80);
+            carElement.style.left = carPosition + '%';
+
+            const roadLines = document.getElementById('roadLines');
+            if (isRunning && velocity > 0) {
+                roadLines.style.animationDuration = (2 / velocity) + 's';
+            }
+
+            updateCalculation();
+        }
+
+        function updateCalculation() {
+            const calcBox = document.getElementById('currentCalculation');
+            
+            if (!isRunning && time === 0) {
+                calcBox.innerHTML = 'Chưa bắt đầu';
+                return;
+            }
+
+            let calculation = '';
+            
+            if (velocity > 0 && time > 0) {
+                calculation += `<strong>📐 Quãng đường:</strong><br>`;
+                calculation += `S = V × T<br>`;
+                calculation += `S = ${velocity} × ${time.toFixed(1)}<br>`;
+                calculation += `S = <span style="color: #667eea; font-weight: bold;">${distance.toFixed(1)} m</span><br><br>`;
+                
+                calculation += `<strong>⚡ Vận tốc:</strong><br>`;
+                calculation += `V = S / T<br>`;
+                calculation += `V = ${distance.toFixed(1)} / ${time.toFixed(1)}<br>`;
+                calculation += `V = <span style="color: #667eea; font-weight: bold;">${velocity} m/s</span><br><br>`;
+                
+                calculation += `<strong>⏱ Thời gian:</strong><br>`;
+                calculation += `T = S / V<br>`;
+                calculation += `T = ${distance.toFixed(1)} / ${velocity}<br>`;
+                calculation += `T = <span style="color: #667eea; font-weight: bold;">${time.toFixed(1)} s</span>`;
+            } else if (velocity > 0) {
+                calculation = `Vận tốc: ${velocity} m/s<br>Nhấn "Chạy" để bắt đầu!`;
+            } else {
+                calculation = 'Hãy tăng vận tốc trước!';
+            }
+            
+            calcBox.innerHTML = calculation;
+        }
+
+        function increaseVelocity() {
+            velocity += 2;
+            
+            if (currentMission === 2 && velocity > 10) {
+                showWarning();
+                document.getElementById('carBody').classList.add('speeding');
+            } else if (currentMission === 3 && velocity > 12) {
+                showWarning();
+                document.getElementById('carBody').classList.add('speeding');
+            } else {
+                document.getElementById('carBody').classList.remove('speeding');
+            }
+            
+            updateDisplay();
+            updateCalculation();
+        }
+
+        function decreaseVelocity() {
+            velocity = Math.max(0, velocity - 2);
+            document.getElementById('carBody').classList.remove('speeding');
+            updateDisplay();
+            updateCalculation();
+        }
+
+        function startSimulation() {
+            if (isRunning) return;
+            
+            isRunning = true;
+            startTime = Date.now() - (time * 1000);
+            document.getElementById('startBtn').textContent = '▶ Đang chạy...';
+            document.getElementById('startBtn').style.background = 'linear-gradient(135deg, #4CAF50 0%, #45a049 100%)';
+            
+            document.getElementById('wheelFront').classList.add('spinning');
+            document.getElementById('wheelBack').classList.add('spinning');
+            
+            if (velocity > 0) {
+                document.getElementById('smoke').style.display = 'block';
+            }
+
+            if (currentMission === 3) {
+                document.getElementById('finishLine').style.display = 'block';
+            }
+            
+            intervalId = setInterval(() => {
+                time = (Date.now() - startTime) / 1000;
+                distance = velocity * time;
+                updateDisplay();
+                
+                checkMissionComplete();
+            }, 100);
+        }
+
+        function stopSimulation() {
+            if (!isRunning) return;
+            
+            isRunning = false;
+            clearInterval(intervalId);
+            document.getElementById('startBtn').textContent = '▶ Chạy';
+            document.getElementById('startBtn').style.background = 'linear-gradient(135deg, #2196F3 0%, #1976D2 100%)';
+            
+            document.getElementById('wheelFront').classList.remove('spinning');
+            document.getElementById('wheelBack').classList.remove('spinning');
+            document.getElementById('smoke').style.display = 'none';
+        }
+
+        function resetSimulation() {
+            stopSimulation();
+            velocity = 0;
+            time = 0;
+            distance = 0;
+            updateDisplay();
+            
+            document.getElementById('car').style.left = '50px';
+            document.getElementById('carBody').classList.remove('speeding');
+            document.getElementById('finishLine').style.display = 'none';
+            hideWarning();
+        }
+
+        function selectMission(missionNumber) {
+            currentMission = missionNumber;
+            resetSimulation();
+            
+            document.querySelectorAll('.mission-btn').forEach((btn, index) => {
+                if (index + 1 === missionNumber) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            
+            document.querySelectorAll('.mission-box').forEach((box, index) => {
+                if (index + 1 === missionNumber) {
+                    box.classList.add('active');
+                } else {
+                    box.classList.remove('active');
+                }
+            });
+        }
+
+        function checkMissionComplete() {
+            if (currentMission === 1) {
+                if (Math.abs(time - 5) < 0.2 && Math.abs(distance - 20) < 1) {
+                    stopSimulation();
+                    showCelebration('Xuất sắc! Bạn đã đi đúng 20m trong 5 giây!');
+                }
+            } else if (currentMission === 3) {
+                if (distance >= 100) {
+                    stopSimulation();
+                    showCelebration('Hoàn thành! Thời gian: ' + time.toFixed(1) + ' giây');
+                }
+            }
+        }
+
+        function showCelebration(message) {
+            const celebration = document.getElementById('celebration');
+            document.getElementById('celebrationMessage').textContent = message;
+            celebration.classList.add('show');
+            
+            setTimeout(() => {
+                celebration.classList.remove('show');
+            }, 3000);
+        }
+
+        function showWarning() {
+            const warning = document.getElementById('warning');
+            warning.classList.add('show');
+            
+            setTimeout(() => {
+                warning.classList.remove('show');
+            }, 2000);
+        }
+
+        function hideWarning() {
+            document.getElementById('warning').classList.remove('show');
+        }
+
+        async function onConfigChange(config) {
+            const gameTitle = config.game_title || defaultConfig.game_title;
+            const mission1Title = config.mission_1_title || defaultConfig.mission_1_title;
+            const mission2Title = config.mission_2_title || defaultConfig.mission_2_title;
+            const mission3Title = config.mission_3_title || defaultConfig.mission_3_title;
+
+            document.getElementById('game-title').textContent = gameTitle;
+            document.getElementById('mission-1-title').textContent = mission1Title;
+            document.getElementById('mission-2-title').textContent = mission2Title;
+            document.getElementById('mission-3-title').textContent = mission3Title;
+        }
+
+        if (window.elementSdk) {
+            window.elementSdk.init({
+                defaultConfig: defaultConfig,
+                onConfigChange: onConfigChange,
+                mapToCapabilities: (config) => ({
+                    recolorables: [],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["game_title", config.game_title || defaultConfig.game_title],
+                    ["mission_1_title", config.mission_1_title || defaultConfig.mission_1_title],
+                    ["mission_2_title", config.mission_2_title || defaultConfig.mission_2_title],
+                    ["mission_3_title", config.mission_3_title || defaultConfig.mission_3_title]
+                ])
+            });
+        }
+
+        updateDisplay();
+    </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a03a6a8944ffede',t:'MTc2MzQyODg4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
